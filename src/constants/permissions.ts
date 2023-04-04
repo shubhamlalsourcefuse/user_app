@@ -3,6 +3,6 @@ export const enum PermissionKey {
   EditUser = 'edit user',
   DeleteUser = 'delete user',
   CreateUser = 'create user',
-  UserDetails = 'user delete',
+  UserDetails = 'user details',
   GetAllUser = 'get all User'
 }

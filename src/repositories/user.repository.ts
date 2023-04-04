@@ -1,11 +1,11 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasOneRepositoryFactory} from '@loopback/repository';
+import {Getter, inject} from '@loopback/core';
+import {HasOneRepositoryFactory, repository} from '@loopback/repository';
+import {SoftCrudRepository} from "loopback4-soft-delete";
 import {PgdatasourceDataSource} from '../datasources';
-import {User, UserRelations, Role, Customer} from '../models';
-import {RoleRepository} from './role.repository';
+import {Customer, Role, User, UserRelations} from '../models';
 import {CustomerRepository} from './customer.repository';
-
-export class UserRepository extends DefaultCrudRepository<
+import {RoleRepository} from './role.repository';
+export class UserRepository extends SoftCrudRepository<
   User,
   typeof User.prototype.id,
   UserRelations

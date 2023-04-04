@@ -62,6 +62,7 @@
     "loopback-connector-postgresql": "^5.5.2",
     "loopback4-authentication": "^7.6.0",
     "loopback4-authorization": "^5.1.2",
+    "loopback4-soft-delete": "^7.2.3",
     "tslib": "^2.0.0",
     "winston": "^3.8.2"
   },
