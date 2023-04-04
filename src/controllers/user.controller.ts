@@ -18,6 +18,8 @@ import {
   response,
 } from '@loopback/rest';
 import {authenticate, STRATEGY} from "loopback4-authentication";
+import {authorize} from "loopback4-authorization";
+import {PermissionKey} from '../constants/permissions';
 import {User} from '../models';
 import {UserRepository} from '../repositories';
 export class UserController {
@@ -27,6 +29,7 @@ export class UserController {
   ) { }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.CreateUser]})
   @post('/users')
   @response(200, {
     description: 'User model instance',
@@ -48,6 +51,7 @@ export class UserController {
     return this.userRepository.create(user);
   }
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.UserCount]})
   @get('/users/count')
   @response(200, {
     description: 'User model count',
@@ -60,6 +64,7 @@ export class UserController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.GetAllUser]})
   @get('/users')
   @response(200, {
     description: 'Array of User model instances',
@@ -79,6 +84,7 @@ export class UserController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.EditUser]})
   @patch('/users')
   @response(200, {
     description: 'User PATCH success count',
@@ -99,6 +105,7 @@ export class UserController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.UserDetails]})
   @get('/users/{id}')
   @response(200, {
     description: 'User model instance',
@@ -116,6 +123,7 @@ export class UserController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.EditUser]})
   @patch('/users/{id}')
   @response(204, {
     description: 'User PATCH success',
@@ -135,6 +143,7 @@ export class UserController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.EditUser]})
   @put('/users/{id}')
   @response(204, {
     description: 'User PUT success',
@@ -147,6 +156,7 @@ export class UserController {
   }
 
   @authenticate(STRATEGY.BEARER)
+  @authorize({permissions: [PermissionKey.DeleteUser]})
   @del('/users/{id}')
   @response(204, {
     description: 'User DELETE success',

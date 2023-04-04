@@ -14,6 +14,7 @@ import {
 } from '@loopback/rest';
 import * as dotenv from 'dotenv';
 import {AuthenticateFn, AuthenticationBindings} from "loopback4-authentication";
+import {AuthorizationBindings, AuthorizeErrorKeys, AuthorizeFn, UserPermissionsFn} from "loopback4-authorization";
 import {LOGGER_BINDS, LogType, LoggerFunction} from './component/logger/utils';
 import {User} from './models';
 import {DecryptCookieFn} from './providers/decrypt-cookies.provider';
@@ -39,7 +40,11 @@ export class MySequence implements SequenceHandler {
     @inject('DecryptCookie')
     public decryptCookie: DecryptCookieFn,
     @inject(AuthenticationBindings.USER_AUTH_ACTION)
-    private AuthenticateAction: AuthenticateFn<User>
+    private AuthenticateAction: AuthenticateFn<User>,
+    @inject(AuthorizationBindings.USER_PERMISSIONS)
+    private getPermission: UserPermissionsFn<string>,
+    @inject(AuthorizationBindings.AUTHORIZE_ACTION)
+    private checkAuthorisation: AuthorizeFn
   ) { }
 
   async handle(context: RequestContext): Promise<void> {
@@ -56,6 +61,19 @@ export class MySequence implements SequenceHandler {
       const route = this.findRoute(request);
       const args = await this.parseParams(request, route);
       const AuthenticatedUser: User = await this.AuthenticateAction(request);
+
+      //get the permission from Authenticated User;
+      const permissions = this.getPermission(AuthenticatedUser.permissions, AuthenticatedUser.role.permissions);
+
+      const isAccessAllowed: boolean = await this.checkAuthorisation(
+        permissions, // do authUser.permissions if using method #1
+        request,
+      );
+
+      if (!isAccessAllowed) {
+        throw new HttpErrors.Forbidden(AuthorizeErrorKeys.NotAllowedAccess);
+      }
+
       const result = await this.invoke(route, args);
       // const cookieDetails = this.decryptCookie(context.request.headers.cookie);
       // if (cookieDetails) {

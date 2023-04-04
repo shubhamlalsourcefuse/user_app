@@ -8,6 +8,7 @@ import {
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import {AuthenticationComponent, Strategies} from 'loopback4-authentication';
+import {AuthorizationBindings, AuthorizationComponent} from "loopback4-authorization";
 import path from 'path';
 import LoggerComponent from './component/logger';
 import {DecryptCookieProvider} from './providers/decrypt-cookies.provider';
@@ -42,6 +43,10 @@ export class UserAppApplication extends BootMixin(
     this.component(LoggerComponent);
 
     this.component(AuthenticationComponent);
+    this.bind(AuthorizationBindings.CONFIG).to({
+      allowAlwaysPaths: ['/explorer'],
+    });
+    this.component(AuthorizationComponent);
 
     this.bind(Strategies.Passport.BEARER_TOKEN_VERIFIER).toProvider(JWTTokenProvider);
 
