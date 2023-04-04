@@ -7,25 +7,26 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {authenticate, STRATEGY} from "loopback4-authentication";
 import {User} from '../models';
 import {UserRepository} from '../repositories';
-
 export class UserController {
   constructor(
     @repository(UserRepository)
-    public userRepository : UserRepository,
-  ) {}
+    public userRepository: UserRepository,
+  ) { }
 
+  @authenticate(STRATEGY.BEARER)
   @post('/users')
   @response(200, {
     description: 'User model instance',
@@ -46,7 +47,7 @@ export class UserController {
   ): Promise<User> {
     return this.userRepository.create(user);
   }
-
+  @authenticate(STRATEGY.BEARER)
   @get('/users/count')
   @response(200, {
     description: 'User model count',
@@ -58,6 +59,7 @@ export class UserController {
     return this.userRepository.count(where);
   }
 
+  @authenticate(STRATEGY.BEARER)
   @get('/users')
   @response(200, {
     description: 'Array of User model instances',
@@ -76,6 +78,7 @@ export class UserController {
     return this.userRepository.find(filter);
   }
 
+  @authenticate(STRATEGY.BEARER)
   @patch('/users')
   @response(200, {
     description: 'User PATCH success count',
@@ -95,6 +98,7 @@ export class UserController {
     return this.userRepository.updateAll(user, where);
   }
 
+  @authenticate(STRATEGY.BEARER)
   @get('/users/{id}')
   @response(200, {
     description: 'User model instance',
@@ -111,6 +115,7 @@ export class UserController {
     return this.userRepository.findById(id, filter);
   }
 
+  @authenticate(STRATEGY.BEARER)
   @patch('/users/{id}')
   @response(204, {
     description: 'User PATCH success',
@@ -129,6 +134,7 @@ export class UserController {
     await this.userRepository.updateById(id, user);
   }
 
+  @authenticate(STRATEGY.BEARER)
   @put('/users/{id}')
   @response(204, {
     description: 'User PUT success',
@@ -140,6 +146,7 @@ export class UserController {
     await this.userRepository.replaceById(id, user);
   }
 
+  @authenticate(STRATEGY.BEARER)
   @del('/users/{id}')
   @response(204, {
     description: 'User DELETE success',

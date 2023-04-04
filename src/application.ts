@@ -7,9 +7,11 @@ import {
   RestExplorerComponent
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
+import {AuthenticationComponent, Strategies} from 'loopback4-authentication';
 import path from 'path';
 import LoggerComponent from './component/logger';
 import {DecryptCookieProvider} from './providers/decrypt-cookies.provider';
+import {JWTTokenProvider} from './providers/jwt-token.provider';
 import {MySequence} from './sequence';
 
 export {ApplicationConfig};
@@ -39,6 +41,9 @@ export class UserAppApplication extends BootMixin(
 
     this.component(LoggerComponent);
 
+    this.component(AuthenticationComponent);
+
+    this.bind(Strategies.Passport.BEARER_TOKEN_VERIFIER).toProvider(JWTTokenProvider);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here

@@ -13,8 +13,9 @@ import {
   SequenceHandler
 } from '@loopback/rest';
 import * as dotenv from 'dotenv';
-import Jwt from 'jsonwebtoken';
-import {LoggerFunction, LOGGER_BINDS, LogType} from './component/logger/utils';
+import {AuthenticateFn, AuthenticationBindings} from "loopback4-authentication";
+import {LOGGER_BINDS, LogType, LoggerFunction} from './component/logger/utils';
+import {User} from './models';
 import {DecryptCookieFn} from './providers/decrypt-cookies.provider';
 dotenv.config();
 
@@ -36,7 +37,9 @@ export class MySequence implements SequenceHandler {
     @inject(LOGGER_BINDS)
     public logger: LoggerFunction,
     @inject('DecryptCookie')
-    public decryptCookie: DecryptCookieFn
+    public decryptCookie: DecryptCookieFn,
+    @inject(AuthenticationBindings.USER_AUTH_ACTION)
+    private AuthenticateAction: AuthenticateFn<User>
   ) { }
 
   async handle(context: RequestContext): Promise<void> {
@@ -52,13 +55,14 @@ export class MySequence implements SequenceHandler {
       this.startingRequestLog(context);
       const route = this.findRoute(request);
       const args = await this.parseParams(request, route);
+      const AuthenticatedUser: User = await this.AuthenticateAction(request);
       const result = await this.invoke(route, args);
-      const cookieDetails = this.decryptCookie(context.request.headers.cookie);
-      if (cookieDetails) {
-        const token = Jwt.sign({userId: cookieDetails}, process.env.JWT_KEY as string);
-        context.request.headers.authorization = `Bearer ${token}`;
-        console.log(token);
-      }
+      // const cookieDetails = this.decryptCookie(context.request.headers.cookie);
+      // if (cookieDetails) {
+      //   const token = Jwt.sign({userId: cookieDetails}, process.env.JWT_KEY as string);
+      //   context.request.headers.authorization = `Bearer ${token}`;
+      //   console.log(token);
+      // }
       this.requestEndLog();
       this.send(response, result);
     } catch (error) {
